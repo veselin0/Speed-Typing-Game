@@ -7,7 +7,18 @@ const App = () => {
         const {value} = event.target;
         setText(value);
     }
-    console.log(text);
+    
+    const wordCount = (text) => {
+        const count = text
+            .trim()
+            .split(' ')
+            .filter(word => word !== "")
+            .length;
+        console.log(count);
+    }
+
+    
+
     return (
         <div>
             <h1>How fast do you type?</h1>
@@ -17,7 +28,7 @@ const App = () => {
                 onChange={handleTextChange}
             />
             <h4>Time Remaining: </h4>
-            <button>Start</button>
+            <button onClick={() => wordCount(text)}>Start</button>
             <h1>Word Count: </h1>
         </div>
     ); 
