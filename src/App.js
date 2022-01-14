@@ -1,49 +1,65 @@
-import { useEffect, useState } from "react";
+import React, {useState, useEffect} from "react"
 
-const App = () => {
-    const [text, setText] = useState("");
-    const [countdown, setCoundown] = useState(5);
-    const [isGameRunning, setIsGameRunning] = useState(false);
-
-    useEffect(() => {
-        if (countdown > 0 && isGameRunning) {
-            setTimeout(() => {
-                setCoundown((prevCountdown) => prevCountdown - 1);
-            }, 1000);
-        }
-    }, [countdown, isGameRunning]);
-
-    const handleTextChange = (event) => {
-        const { value } = event.target;
-        setText(value);
-    };
-
-    const wordCount = (text) => {
-        const count = text
-            .trim()
-            .split(" ")
-            .filter((word) => word !== "").length;
-        console.log(count);
-    };
-
-    const startGame = () => {
-        setIsGameRunning(isGameRunning => !isGameRunning);
-        wordCount(text);
+function App() {
+    const STARTING_TIME = 5
+    
+    const [text, setText] = useState("")
+    const [timeRemaining, setTimeRemaining] = useState(STARTING_TIME)
+    const [isTimeRunning, setIsTimeRunning] = useState(false)
+    const [wordCount, setWordCount] = useState(0)
+    
+    function handleChange(e) {
+        const {value} = e.target
+        setText(value)
     }
-
+    
+    function calculateWordCount(text) {
+        const wordsArr = text.trim().split(" ")
+        return wordsArr.filter(word => word !== "").length
+    }
+    
+    function startGame() {
+        setIsTimeRunning(true)
+        setTimeRemaining(STARTING_TIME)
+        setText("")
+        setWordCount(0)
+    }
+    
+    function endGame() {
+        setIsTimeRunning(false)
+        setWordCount(calculateWordCount(text))
+    }
+    
+    // https://www.google.com/search?q=Disable+button+in+react
+    
+    useEffect(() => {
+        if(isTimeRunning && timeRemaining > 0) {
+            setTimeout(() => {
+                setTimeRemaining(time => time - 1)
+            }, 1000)
+        } else if(timeRemaining === 0) {
+            endGame()
+        }
+    }, [timeRemaining, isTimeRunning])
+    
     return (
         <div>
             <h1>How fast do you type?</h1>
             <textarea
-                placeholder="Type here!"
+                onChange={handleChange}
                 value={text}
-                onChange={handleTextChange}
+                disabled={!isTimeRunning}
             />
-            <h4>Time Remaining: {countdown}s</h4>
-            <button onClick={() => startGame()}>Start</button>
-            <h1>Word Count: </h1>
+            <h4>Time remaining: {timeRemaining}</h4>
+            <button 
+                onClick={startGame}
+                disabled={isTimeRunning}
+            >
+                Start
+            </button>
+            <h1>Word count: {wordCount}</h1>
         </div>
-    );
-};
+    )
+}
 
-export default App;
+export default App
